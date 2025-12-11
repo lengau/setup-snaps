@@ -60,13 +60,4 @@ jobs:
         with:
           snaps: |
             google-cloud-sdk
-  huge-again:
-    needs: [huge]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./
-        with:
-          snaps: |
-            google-cloud-sdk
 

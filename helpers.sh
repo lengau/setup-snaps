@@ -4,7 +4,7 @@ function cache_snap(){
   name="$1"
   channel="$(echo "$2" | cut -d= -f2)"
   snap_line="${*}"
-  mv "old_snaps/${name}_*" . || true
+  mv old_snaps/"${name}"_* . || true
   old_snaps="$(find . -type f -regextype egrep -regex ".*/${name}_[0-9]+\.(snap|assert)")"
   if [[ -z "${old_snaps}" ]]; then
     echo "Downloading ${snap_line}"
