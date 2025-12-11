@@ -52,3 +52,21 @@ jobs:
           snap info codespell
           snap info astral-ty
           snap info ruff
+  huge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          snaps: |
+            google-cloud-sdk
+  huge-again:
+    needs: [huge]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          snaps: |
+            google-cloud-sdk
+
