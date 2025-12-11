@@ -11,6 +11,7 @@ function cache_snap(){
     snap download ${snap_line}  # write the line as-is for the rest of the command.
   else
     metadata="$(curl --unix-socket /run/snapd.socket http://./v2/find?name="${name}")"
+    echo "$metadata" | jq
     if [[ -z "${channel}" ]]; then
       channel="$(echo "$metadata" | jq -r .result[].channel)"
       if [[ ! "$channel" == */* ]]; then

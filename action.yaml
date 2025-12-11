@@ -57,7 +57,7 @@ runs:
         source ${{ github.action_path }}/helpers.sh
 
         for snap_line in "${snaps[@]}"; do
-          cache_snap $snap_line
+          cache_snap $snap_line &
         done
 
         rm -rf old_snaps
