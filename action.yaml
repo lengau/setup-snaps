@@ -29,11 +29,14 @@ runs:
           fi
         fi
     - name: Get cached snaps
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v4
+      id: restore
       with:
         path: ${{ runner.temp }}/.snap_cache
-        key: snap-cache-${{ runner.arch }}-${{ github.workflow }}-${{ github.ref }}-${{ github.sha }}
+        key: snap-cache-${{ runner.arch }}-${{ github.workflow }}-${{ github.job }}-${{ github.ref }}-${{ github.sha }}
         restore-keys: |
+          snap-cache-${{ runner.arch }}-${{ github.workflow }}-${{ github.job }}-${{ github.ref }}-
+          snap-cache-${{ runner.arch }}-${{ github.workflow }}-${{ github.job }}-
           snap-cache-${{ runner.arch }}-${{ github.workflow }}-
           snap-cache-${{ runner.arch }}-
     - name: Refresh cache
@@ -67,3 +70,8 @@ runs:
         cd "${{ runner.temp }}/.snap_cache"
         find . -type f -name '*.assert' -exec sudo snap ack '{}' ';'
         find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+'
+    - name: Save cached snaps
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/.snap_cache
+        key: ${{ steps.restore.outputs.cache-primary-key }}
