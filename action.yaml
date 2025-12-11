@@ -43,7 +43,7 @@ runs:
           snap-cache-${{ runner.arch }}-${{ github.workflow }}-${{ github.job }}-
           snap-cache-${{ runner.arch }}-${{ github.workflow }}-
           snap-cache-${{ runner.arch }}-
-    - name: Refresh cache
+    - name: Setup snaps
       shell: bash
       run: |
         mapfile snaps -t <<EOF
@@ -57,6 +57,12 @@ runs:
 
         source ${{ github.action_path }}/helpers.sh
 
+        if [[ -f cached.assert ]]; then
+          sudo snap ack cached.assert
+          find . -name '*.assert' -exec snap ack '{}' ';'
+          sudo snap install --ignore-validation *.snap
+        fi
+
         for snap_line in "${snaps[@]}"; do
           cache_snap $snap_line &
         done
@@ -64,15 +70,6 @@ runs:
         wait
 
         rm -rf old_snaps
-    - name: Install snaps and copy extra snaps to cache
-      shell: bash
-      run: |
-        cd "${{ runner.temp }}/.snap_cache"
-        if [[ -f cached.assert ]]; then
-          sudo snap ack cached.assert
-        fi
-        find . -type f -name '*.assert' -exec sudo snap ack '{}' ';'
-        find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+' &
 
         sudo cp --no-clobber /var/lib/snapd/snaps/*.snap "${{ runner.temp }}/.snap_cache" || true
         sudo rm -f snapd*.snap  # Don't update snapd
