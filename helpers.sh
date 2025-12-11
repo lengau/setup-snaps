@@ -10,6 +10,7 @@ function cache_snap(){
     echo "Downloading ${snap_line}"
     # shellcheck disable=SC2086
     snap download ${snap_line}  # write the line as-is for the rest of the command.
+    sudo snap ack "${name}"_*.assert
     sudo snap install "${name}"_*.snap
   else
     metadata="$(curl -s --unix-socket /run/snapd.socket http://./v2/find?name="${name}")"
@@ -28,6 +29,7 @@ function cache_snap(){
       echo "Updating ${snap_line}"
       # shellcheck disable=SC2086
       snap download $snap_line  # write the line as-is for the rest of the command.
+      sudo snap ack "${name}"_*.assert
       sudo snap install "${name}"_*.snap
     else
       echo "Already up-to-date: ${snap_line}"
