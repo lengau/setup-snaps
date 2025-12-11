@@ -73,7 +73,7 @@ runs:
         find . -type f -name '*.assert' -exec sudo snap ack '{}' ';'
         find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+' &
 
-        sudo cp /var/lib/snapd/snaps/*.snap "${{ runner.temp }}/.snap_cache" || true
+        sudo cp --no-clobber /var/lib/snapd/snaps/*.snap "${{ runner.temp }}/.snap_cache" || true
         sudo chown "${USER}" "${{ runner.temp }}/.snap_cache"/*.snap || true
         sudo chmod a+r "${{ runner.temp }}/.snap_cache"/*.snap || true
         # Get all assertions
