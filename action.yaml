@@ -60,6 +60,8 @@ runs:
           cache_snap $snap_line &
         done
 
+        wait
+
         rm -rf old_snaps
     - name: Install snaps
       shell: bash
