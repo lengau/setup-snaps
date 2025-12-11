@@ -30,7 +30,7 @@ function cache_snap(){
       # shellcheck disable=SC2086
       snap download $snap_line  # write the line as-is for the rest of the command.
       sudo snap ack "${name}"_*.assert
-      sudo snap install "${name}"_*.snap
+      sudo snap install --classic "${name}"_*.snap
     else
       echo "Already up-to-date: ${snap_line}"
     fi

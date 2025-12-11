@@ -57,7 +57,7 @@ runs:
         if [[ -f cached.assert ]]; then
           sudo snap ack cached.assert
           find . -name '*.assert' -exec sudo snap ack '{}' ';'
-          sudo snap install --transaction=all-snaps *.snap
+          sudo snap install --transaction=all-snaps --classic *.snap
         fi
 
         mkdir old_snaps

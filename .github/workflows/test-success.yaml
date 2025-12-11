@@ -29,14 +29,17 @@ jobs:
             codespell
             astral-ty --channel=latest/edge
             ruff --channel=latest/candidate
+            snapcraft
       - name: Check snaps are installed
         run: |
           /snap/bin/codespell --version
           /snap/bin/astral-ty.ty --version
           /snap/bin/ruff --version
+          /snap/bin/snapcraft --version
           snap info codespell
           snap info astral-ty
           snap info ruff
+          snap info snapcraft
   basic-speed-compare:
     strategy:
       matrix:
@@ -52,14 +55,17 @@ jobs:
           sudo snap install codespell
           sudo snap install astral-ty --channel=latest/edge
           sudo snap install ruff --channel=latest/candidate
+          sudo snap install snapcraft --classic
       - name: Check snaps are installed
         run: |
           /snap/bin/codespell --version
           /snap/bin/astral-ty.ty --version
           /snap/bin/ruff --version
+          /snap/bin/snapcraft --version
           snap info codespell
           snap info astral-ty
           snap info ruff
+          snap info snapcraft
 
   huge:
     runs-on: ubuntu-24.04
