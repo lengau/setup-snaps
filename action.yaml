@@ -57,7 +57,7 @@ runs:
         if [[ -f cached.assert ]]; then
           sudo snap ack cached.assert
           find . -name '*.assert' -exec sudo snap ack '{}' ';'
-          sudo snap install --ignore-validation *.snap
+          sudo snap install --transaction=all-snaps *.snap
         fi
 
         mkdir old_snaps
