@@ -50,20 +50,35 @@ runs:
 
         mkdir -p "${{ runner.temp }}/.snap_cache"
         cd "${{ runner.temp }}/.snap_cache"
+
         mkdir old_snaps
         mv *.snap *.assert old_snaps || true
 
-        for snap_line in "${snaps[@]}"; do
-          name=$(echo "${snap_line}" | awk '{print $1;}')
+        function cache_snap(){
+          name="$1"
+          channel="$(echo $2 | cut -d= -f2)"
+          snap_line="${@}"
           mv "old_snaps/${name}_*" . || true
           old_snaps="$(find . -type f -regextype egrep -regex ".*/${name}_[0-9]+\.(snap|assert)")"
-          snap download ${snap_line}
-          current_snaps="$(find . -type f -regextype egrep -regex ".*/${name}_[0-9]+\.(snap|assert)")"
-          if [[ $(echo "${current_snaps}" | wc -l) > $(echo "${old_snaps}" | wc -l) ]]; then
-            if [[ $(echo "${old_snaps}" | wc -l) > 1 ]]; then
-              rm $old_snaps
+          if [[ -z "${old_snaps}" ]]; then
+            snap download ${snap_line}
+          else
+            metadata="$(curl --unix-socket /run/snapd.socket http://./v2/find?name=$name)"
+            if [[ -z "${channel}" ]]; then
+              channel="$(echo "$metadata" | jq -r .result[].channel)"
+              if [[ ! "$channel" == */* ]]; then
+                channel="latest/${channel}"
+              fi
             fi
-          fi
+            latest_revision=$(echo "$metadata" | jq -r ".result[].channels[\"$channel\"].revision")
+            if [[ ! -f "${name}_${latest_revision}.snap" ]]; then
+              rm -f "${name}"*
+              snap download $snap_line
+            fi
+        }
+
+        for snap_line in "${snaps[@]}"; do
+          cache_snap $snap_line
         done
 
         rm -rf old_snaps
