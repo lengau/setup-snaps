@@ -31,6 +31,7 @@ runs:
             echo -e "\e[31mERROR\e[0m: needed command unavailable and unknown Linux distribution" >> /dev/stderr
           fi
         fi
+        sudo snap refresh --hold=48h
     - name: Get cached snaps
       uses: actions/cache/restore@v4
       id: restore
@@ -74,6 +75,7 @@ runs:
         find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+' &
 
         sudo cp --no-clobber /var/lib/snapd/snaps/*.snap "${{ runner.temp }}/.snap_cache" || true
+        sudo rm -f snapd*.snap  # Don't update snapd
         sudo chown "${USER}" "${{ runner.temp }}/.snap_cache"/*.snap || true
         sudo chmod a+r "${{ runner.temp }}/.snap_cache"/*.snap || true
         # Get all assertions
