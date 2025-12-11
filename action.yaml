@@ -23,7 +23,10 @@ runs:
 
         if ! command -v snap || ! command -v xdelta3; then
           if command -v apt-get; then
-            sudo apt-get --yes install snapd xdelta3
+            if ! sudo apt-get --yes install snapd xdelta3; then
+              sudo apt-get update
+              sudo apt-get --yes install snapd xdelta3
+            fi
           else
             echo -e "\e[31mERROR\e[0m: needed command unavailable and unknown Linux distribution" >> /dev/stderr
           fi
