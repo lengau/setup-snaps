@@ -21,11 +21,11 @@ runs:
           exit 1
         fi
 
-        if ! command -v snap || ! command -v xdelta3; then
+        if ! command -v snap || ! command -v jq; then
           if command -v apt-get; then
-            if ! sudo apt-get --yes install snapd xdelta3; then
+            if ! sudo apt-get --yes install snapd xdelta3 jq; then
               sudo apt-get update
-              sudo apt-get --yes install snapd xdelta3
+              sudo apt-get --yes install snapd xdelta3 jq
             fi
           else
             echo -e "\e[31mERROR\e[0m: needed command unavailable and unknown Linux distribution" >> /dev/stderr
@@ -54,28 +54,7 @@ runs:
         mkdir old_snaps
         mv *.snap *.assert old_snaps || true
 
-        function cache_snap(){
-          name="$1"
-          channel="$(echo $2 | cut -d= -f2)"
-          snap_line="${@}"
-          mv "old_snaps/${name}_*" . || true
-          old_snaps="$(find . -type f -regextype egrep -regex ".*/${name}_[0-9]+\.(snap|assert)")"
-          if [[ -z "${old_snaps}" ]]; then
-            snap download ${snap_line}
-          else
-            metadata="$(curl --unix-socket /run/snapd.socket http://./v2/find?name=$name)"
-            if [[ -z "${channel}" ]]; then
-              channel="$(echo "$metadata" | jq -r .result[].channel)"
-              if [[ ! "$channel" == */* ]]; then
-                channel="latest/${channel}"
-              fi
-            fi
-            latest_revision=$(echo "$metadata" | jq -r ".result[].channels[\"$channel\"].revision")
-            if [[ ! -f "${name}_${latest_revision}.snap" ]]; then
-              rm -f "${name}"*
-              snap download $snap_line
-            fi
-        }
+        source ${{ github.action_path }}/helpers.sh
 
         for snap_line in "${snaps[@]}"; do
           cache_snap $snap_line
