@@ -67,6 +67,14 @@ jobs:
           sudo snap install codespell
           sudo snap install astral-ty --channel=latest/edge
           sudo snap install ruff --channel=latest/candidate
+      - name: Check snaps are installed
+        run: |
+          /snap/bin/codespell --version
+          /snap/bin/astral-ty.ty --version
+          /snap/bin/ruff --version
+          snap info codespell
+          snap info astral-ty
+          snap info ruff
 
   huge:
     runs-on: ubuntu-24.04
@@ -76,17 +84,9 @@ jobs:
         with:
           snaps: |
             google-cloud-sdk
-      - name: Check snaps are installed
-        run: |
-          /snap/bin/codespell --version
-          /snap/bin/astral-ty.ty --version
-          /snap/bin/ruff --version
-          snap info codespell
-          snap info astral-ty
-          snap info ruff
   huge-speed-compare:
     runs-on: ubuntu-24.04
     steps:
       - run: |
-         sudo snap install google-cloud-sdk
+         sudo snap install google-cloud-sdk --classic
 
