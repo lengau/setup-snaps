@@ -63,7 +63,7 @@ runs:
         wait
 
         rm -rf old_snaps
-    - name: Install snaps
+    - name: Install snaps and copy extra snaps to cache
       shell: bash
       run: |
         cd "${{ runner.temp }}/.snap_cache"
@@ -71,15 +71,15 @@ runs:
           sudo snap ack cached.assert
         fi
         find . -type f -name '*.assert' -exec sudo snap ack '{}' ';'
-        find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+'
-    - name: Copy system snaps to cache
-      shell: bash
-      run: |
+        find . -type f -name '*.snap' -exec sudo snap install --classic '{}' '+' &
+
         sudo cp /var/lib/snapd/snaps/*.snap "${{ runner.temp }}/.snap_cache" || true
         sudo chown "${USER}" "${{ runner.temp }}/.snap_cache"/*.snap || true
         sudo chmod a+r "${{ runner.temp }}/.snap_cache"/*.snap || true
         # Get all assertions
         find /var/lib/snapd/assertions -type f -exec cat '{}' ';' -printf '\n'  > "${{ runner.temp }}/.snap_cache/cached.assert"
+
+        wait
     - name: Save cached snaps
       uses: actions/cache/save@v4
       with:
