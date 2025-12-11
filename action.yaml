@@ -21,11 +21,11 @@ runs:
           exit 1
         fi
 
-        if ! command -v snap; then
+        if ! command -v snap || ! command -v xdelta3; then
           if command -v apt-get; then
-            sudo apt-get --yes install snapd
+            sudo apt-get --yes install snapd xdelta3
           else
-            echo -e "\e[31mERROR\e[0m: snapd unavailable and unknown Linux distribution" >> /dev/stderr
+            echo -e "\e[31mERROR\e[0m: needed command unavailable and unknown Linux distribution" >> /dev/stderr
           fi
         fi
     - name: Get cached snaps
